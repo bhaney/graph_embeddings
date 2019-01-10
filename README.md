@@ -40,18 +40,18 @@ Then select `plot_aifb_graph_embeddings.ipynb`
 ## Usage
 
 The program `get_graph_embeddings.py` takes the following arguments:
+```
+  -p PATH,   --path PATH,     Provide path to the directory of .CSV files.
+  -f FILES,  --files FILES,   If you only want to run over one file, give path of the single CSV file..
 
-  -p PATH, --path PATH,  Provide path to the directory of .CSV files.
-  -f FILES, --files FILES, If you only want to run over one file, give path of the single CSV file..
+  -n NAME,   --name NAME,     Name of the output file of the embeddings in the `results/` directory.
+  -a ALGO,   --algo ALGO,     Which algorithm to use. `auto` or `rgcn` available.
+  -d DIM,    --dim DIM,       Desired embedding dimension.
+  -e EPOCHS, --epochs EPOCHS, Number of epochs to train.
+  -t TARGET, --target TARGET, CSV file with targets for training.
+```
 
-  -n NAME, --name NAME,  name of the output file of the embeddings in the `results/` directory.
-  -a ALGO, --algo ALGO,  which algorithm to use. `auto` or `rgcn` available.
-  -d DIM, --dim DIM,     desired embedding dimension.
-  -e EPOCHS, --epochs EPOCHS, number of epochs to train.
-  -t TARGET, --target TARGET, csv file with targets for training.
-
-
-The CSV file has to represent the graph by triplet connection of (subject_node, relation_edge, predicate_node). Each row should contain one connection. 
+The CSV file has to represent the graph by triplet connection of `subject_node, relation_edge, predicate_node`. Each row should contain one connection. 
 
 Example:
 ```
@@ -66,3 +66,7 @@ chicago,IS,city
 ```
 
 The output of the program will be a list of `(node_name, node_embeddings)`. It will be saved as a `.pkl` file in the `results/` directory.
+
+## Acknowledgements
+
+The relation-GCN algorithm is taken from an implementation of _Modeling Relational Data with Graph Convolutional Networks_ (2017) by Michael Schlichtkrull, Thomas N. Kipf, Peter Bloem, Rianne van den Berg, Ivan Titov, and Max Welling.
