@@ -11,8 +11,8 @@ class Multigraph:
         self.n_rels = 0
         self.nodes = {}
         self.rels = {}
-        self.node_labels = []
-        self.rel_labels = []
+        self.node_names = []
+        self.rel_names = []
         self.sparse_graph = {} #{relation: [row list, col list, data list]}
         self.connection_counter = Counter()
     
@@ -36,15 +36,15 @@ class Multigraph:
         #add new nodes and relations to dictionaries
         if src not in self.nodes.keys():
             self.nodes[src] = self.n_nodes
-            self.node_labels.append(src)
+            self.node_names.append(src)
             self.n_nodes += 1
         if targ not in self.nodes.keys():
             self.nodes[targ] = self.n_nodes
-            self.node_labels.append(targ)
+            self.node_names.append(targ)
             self.n_nodes += 1
         if rel not in self.rels.keys():
             self.rels[rel] = self.n_rels
-            self.rel_labels.append(rel)
+            self.rel_names.append(rel)
             self.n_rels += 1
             self.sparse_graph[self.rels[rel]] = [[],[],[]] #{relation: [row, col, data]}
         #count number of connections
@@ -81,12 +81,12 @@ class Multigraph:
         shape = (self.n_nodes,self.n_nodes)
         #switch the rows and columns
         return csr_matrix((graph_k[2], (graph_k[1],graph_k[0])), shape=shape, dtype=np.int8)
+
+    def get_node_name(self,index):
+        return self.node_names[index]
     
-    def get_node_label(self,index):
-        return self.node_labels[index]
-    
-    def get_relation_label(self,index):
-        return self.rel_labels[index]
+    def get_relation_name(self,index):
+        return self.rel_names[index]
     
     def get_connection_counter(self):
         return self.connection_counter
