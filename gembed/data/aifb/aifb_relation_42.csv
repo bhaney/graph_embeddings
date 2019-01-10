@@ -1,0 +1,10 @@
+http://swrc.ontoware.org/ontology#projectInfo,http://www.w3.org/2002/07/owl#inverseOf,http://swrc.ontoware.org/ontology#describesProject
+http://swrc.ontoware.org/ontology#publisher,http://www.w3.org/2002/07/owl#inverseOf,http://swrc.ontoware.org/ontology#publishes
+http://swrc.ontoware.org/ontology#cite,http://www.w3.org/2002/07/owl#inverseOf,http://swrc.ontoware.org/ontology#citedBy
+http://swrc.ontoware.org/ontology#hasPartEvent,http://www.w3.org/2002/07/owl#inverseOf,http://swrc.ontoware.org/ontology#atEvent
+http://swrc.ontoware.org/ontology#develops,http://www.w3.org/2002/07/owl#inverseOf,http://swrc.ontoware.org/ontology#developedBy
+http://swrc.ontoware.org/ontology#carriesOut,http://www.w3.org/2002/07/owl#inverseOf,http://swrc.ontoware.org/ontology#carriedOutBy
+http://swrc.ontoware.org/ontology#headOfGroup,http://www.w3.org/2002/07/owl#inverseOf,http://swrc.ontoware.org/ontology#head
+http://swrc.ontoware.org/ontology#supervisor,http://www.w3.org/2002/07/owl#inverseOf,http://swrc.ontoware.org/ontology#supervises
+http://swrc.ontoware.org/ontology#employs,http://www.w3.org/2002/07/owl#inverseOf,http://swrc.ontoware.org/ontology#affiliation
+http://swrc.ontoware.org/ontology#citedBy,http://www.w3.org/2002/07/owl#inverseOf,http://swrc.ontoware.org/ontology#cite

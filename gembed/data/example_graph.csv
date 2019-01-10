@@ -1,0 +1,15 @@
+dog,IS,mammal
+dog,MAKES_SOUND,woof
+cat,IS,mammal
+cat,MAKES_SOUND,meow
+mouse,IS,mammal
+mouse,MAKES_SOUND,squeak
+ball,IS,toy
+toy,MAKES_SOUND,squeak
+mammal,HAS,fur
+rufus,INSTANCE_OF,dog
+spot,INSTANCE_OF,dog
+algernon,INSTANCE_OF,mouse
+rufus,LOCATED_IN,chicago
+spot,LOCATED_IN,chicago
+chicago,IS,city
