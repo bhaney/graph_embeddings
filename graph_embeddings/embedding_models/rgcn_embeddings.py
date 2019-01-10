@@ -113,7 +113,7 @@ def train_rgcn(model, data,  y_train, y_val, idx_train, idx_val, epochs=10, trai
                   "time= {:.4f}".format(time.time() - t))
     return preds
 
-def rgcn_embeddings(graph,target_csv):
+def rgcn_embeddings(graph, embedding_dim, target_csv, epochs=10):
     num_nodes = graph.n_nodes
     num_relations = graph.n_rels
     # get inputs for model
@@ -125,11 +125,10 @@ def rgcn_embeddings(graph,target_csv):
     y_train, y_val, y_test, idx_train, idx_val, idx_test = get_splits(y, train_idx, test_idx, True)
     train_mask = sample_mask(idx_train, y.shape[0])
     # make model for embedding
-    embedding_dim = 24
     output_dim = y_train.shape[1]
     embedding_model, training_model = rgcn_model(num_nodes, embedding_dim, output_dim, support)
     #train model
-    preds = train_rgcn(training_model, [X] + A, y_train, y_val, idx_train, idx_val, epochs=50, train_mask=train_mask)
+    preds = train_rgcn(training_model, [X] + A, y_train, y_val, idx_train, idx_val, epochs=epochs, train_mask=train_mask)
     # print the test results
     test_loss, test_acc = evaluate_preds(preds, [y_test], [idx_test])
     print("Test set results:",
