@@ -1,13 +1,17 @@
-from future.utils import iteritems
+# Based primarily on https://github.com/tkipf/relational-gcn/blob/master/rgcn/train.py
+# From Thomas Kipf's relational-gcn repo
+from __future__ import print_function
 
 import pickle, os, random
-from collections import defaultdict
-import unicodecsv as csv
-from multigraph import Multigraph
-from rgcn.utils import sample_mask, get_splits, evaluate_preds
-
 import numpy as np
 import scipy as sp
+import unicodecsv as csv
+
+from collections import defaultdict
+from future.utils import iteritems
+
+from gembed.multigraph import Multigraph
+from rgcn.utils import sample_mask, get_splits, evaluate_preds
 
 from keras.layers import Input, Dropout
 from keras.models import Model

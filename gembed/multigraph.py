@@ -25,7 +25,7 @@ class Multigraph:
                     i += 1
                     continue
                 if len(row) != 3:
-                    raise ValueError("Row {} is not in triplet form 'subject, relation, predicate'".format(i))
+                    raise ValueError("Row {} of {} is not in triplet form 'subject, relation, predicate'".format(i,csv_file))
                 self.add_connection(row)
                 i += 1
         print('Added {} connections'.format(i))

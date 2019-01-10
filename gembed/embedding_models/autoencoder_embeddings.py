@@ -1,5 +1,7 @@
-from layers import DenseTied
-from multigraph import Multigraph
+from __future__ import print_function
+
+from gembed.layers import DenseTied
+from gembed.multigraph import Multigraph
 
 from keras.layers import Input, Dense
 from keras.models import Model

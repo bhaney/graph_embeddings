@@ -1,9 +1,11 @@
 # input: path to CSV files of connections
 # output: list of tuples of form (node_name, node_embedding)
+from __future__ import print_function
+
 import argparse, pickle, os
-from multigraph import Multigraph
-from embedding_models.rgcn_embeddings import rgcn_embeddings
-from embedding_models.autoencoder_embeddings import autoencoder
+from gembed.multigraph import Multigraph
+from gembed.embedding_models.rgcn_embeddings import rgcn_embeddings
+from gembed.embedding_models.autoencoder_embeddings import autoencoder
 
 def save_object(obj, filename):
     with open(filename, 'wb') as output:  # Overwrites any existing file.
