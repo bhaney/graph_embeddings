@@ -16,9 +16,13 @@ def get_graph(list_of_files):
         graph.read_csv(f)
     return graph
 
-def get_graph_embeddings(graph, embedding_dim, target_csv=None, epochs=1):
-    #embeddings = rgcn_embeddings(graph, embedding_dim, target_csv, epochs)
-    embeddings = autoencoder(graph, embedding_dim, epochs)
+def get_graph_embeddings(algo, graph, embedding_dim, target_csv=None, epochs=1):
+    if algo == "rgcn":
+        if target_csv is None:
+            raise ValueError("R-GCN requires a target CSV file.")
+        embeddings = rgcn_embeddings(graph, embedding_dim, target_csv, epochs)
+    elif algo == "auto":
+        embeddings = autoencoder(graph, embedding_dim, epochs)
     return zip(graph.node_names, embeddings)
     
 if __name__ == "__main__":
@@ -26,11 +30,16 @@ if __name__ == "__main__":
     group = parser.add_mutually_exclusive_group()
     group.add_argument("-p", "--path", help="path of directory of csv files.")
     group.add_argument("-f", "--files",action='append', help="csv files with connections, separated by commas.")
-    parser.add_argument("-t", "--target", help="csv file with targets for training.")
     parser.add_argument("-n", "--name", help="name for output files.", required=True)
-    parser.add_argument("-e", "--epochs", type=int, help="number of epochs.", required=False)
+    parser.add_argument("-a", "--algo", help="which algorithm to use. auto or rgcn", required=True)
     parser.add_argument("-d", "--dim", type=int, help="embedding dimension.", required=True)
+    parser.add_argument("-e", "--epochs", type=int, help="number of epochs.", required=False)
+    parser.add_argument("-t", "--target", help="csv file with targets for training.")
     args = parser.parse_args()
+    # must use one of the available algorithms
+    algos = ['auto','rgcn']
+    if args.algo not in algos:
+        raise ValueError("algo argument must be one of these: {}".format(algos))
     list_of_files = list()
     if args.files:
         list_of_files = [os.path.join(os.getcwd(),f) for f in args.files]
@@ -48,7 +57,7 @@ if __name__ == "__main__":
     name = args.name
     #Get the embedings!
     graph = get_graph(list_of_files)
-    embeddings = get_graph_embeddings(graph, args.dim, target_csv=target_csv, epochs=epochs)
+    embeddings = get_graph_embeddings(args.algo, graph, args.dim, target_csv=target_csv, epochs=epochs)
     #Save it to disk
     if not os.path.isdir(os.path.join(os.getcwd(),'results')):
         os.mkdir(os.path.join(os.getcwd(),'results'))
