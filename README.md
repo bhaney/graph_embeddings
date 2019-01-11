@@ -76,6 +76,8 @@ chicago,IS,city
 
 The output of `get_graph_embeddings` will be a list of `(node_name, node_embedding)` for each node in the graph. It you run it from the command line, the embeddings will be saved as a `.pkl` file in the `results/` directory.
 
+## Multigraph Summary
+
 To see a summary of facts about the graph, you can use the `summary()` function from the Multigraph class. As an example:
 
 ```
