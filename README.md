@@ -4,7 +4,7 @@ A package for finding embedding vectors for relational graphs. Input a CSV file 
 
 
 ## Installation
-This package was created with Python 2.7 and works with Keras 2.2.4 using Tensorflow 1.12.0 as the backend. It's recommended to use an anaconda instance to set up the environment in order to ensure no dependencies conflict. You can download the anaconda package manager here: https://www.anaconda.com/download/
+This package was created with Python 2.7 and works with Keras 2.2.4 using Tensorflow 1.12.0 as the backend. It's recommended to use an anaconda instance to set up the environment in order to ensure no conflicts between various packages. You can download the anaconda package manager here: https://www.anaconda.com/download/
 
 1. Create the anaconda enviorment
 ```
