@@ -26,6 +26,10 @@ def get_graph_embeddings(algo, graph, embedding_dim, target_csv=None, epochs=1):
     elif algo == "auto":
         embeddings = autoencoder(graph, embedding_dim, epochs)
     return zip(graph.node_names, embeddings)
+
+def csv_list_from_dir(dir_path):
+    return [os.path.join(os.getcwd(),dir_path,f) for f in os.listdir(dir_path) if f[-4:] == '.csv']
+
     
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -46,7 +50,7 @@ if __name__ == "__main__":
     if args.files:
         list_of_files = [os.path.join(os.getcwd(),f) for f in args.files]
     elif args.path:
-        list_of_files = [os.path.join(os.getcwd(),args.path,f) for f in os.listdir(args.path) if f[-4:] == '.csv']
+        list_of_files = csv_list_from_dir(args.path)
     print('Using the following CSV files:')
     for i in list_of_files:
         print('  '+i)

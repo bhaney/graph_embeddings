@@ -49,8 +49,7 @@ def get_train_test_labels(graph, filename, train_frac=0.8):
 
 def rgcn_inputs(graph):
     A = list()
-    for i in range(graph.n_rels):
-	k = graph.get_relation_name(i)
+    for k in graph.rel_names:
 	A.append(graph.get_adjacency_matrix_k(k))
 	#A.append(graph.get_transpose_adjacency_matrix_k(k))
     A.append(sp.sparse.identity(graph.n_nodes).tocsr())

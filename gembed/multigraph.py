@@ -2,6 +2,8 @@ from __future__ import print_function
 from __future__ import absolute_import
 import numpy as np
 import unicodecsv as csv
+import operator
+from future.utils import iteritems
 from collections import defaultdict, Counter
 from scipy.sparse import csr_matrix
 
@@ -14,7 +16,6 @@ class Multigraph:
         self.node_names = []
         self.rel_names = []
         self.sparse_graph = {} #{relation: [row list, col list, data list]}
-        self.connection_counter = Counter()
     
     def read_csv(self, csv_file, delimiter=",", exclude_first_row=False):
         i = 0
@@ -28,7 +29,7 @@ class Multigraph:
                     raise ValueError("Row {} of {} is not in triplet form 'subject, relation, predicate'".format(i,csv_file))
                 self.add_connection(row)
                 i += 1
-        print('Added {} connections'.format(i))
+        print('Processed {} lines.'.format(i))
 
     def add_connection(self, connection):
         # connection is (source, relation, target)
@@ -47,8 +48,6 @@ class Multigraph:
             self.rel_names.append(rel)
             self.n_rels += 1
             self.sparse_graph[self.rels[rel]] = [[],[],[]] #{relation: [row, col, data]}
-        #count number of connections
-        self.connection_counter.update({rel: 1})
         # add new connection to graph
         self.sparse_graph[self.rels[rel]][0].append(self.nodes[src])
         self.sparse_graph[self.rels[rel]][1].append(self.nodes[targ])
@@ -88,5 +87,54 @@ class Multigraph:
     def get_relation_name(self,index):
         return self.rel_names[index]
     
-    def get_connection_counter(self):
-        return self.connection_counter
+    def count_relations(self):
+        relation_counter = []
+        for k in self.rel_names:
+            mat = self.get_adjacency_matrix_k(k)
+            relation_counter.append((k,mat.size))
+        #sort from greatest to least
+        relation_counter.sort(key=operator.itemgetter(1), reverse=True)
+        return relation_counter
+
+    def count_node_edges(self):
+        node_edge_counts = []
+        mat = self.get_adjacency_matrix()
+        for i in range(self.n_nodes):
+            node_edge_counts.append((self.get_node_name(i), mat[i].indices.size))
+        #sort from greatest to least
+        node_edge_counts.sort(key=operator.itemgetter(1), reverse=True)
+        return node_edge_counts
+
+    def equivalent_nodes(self):
+        repeats = defaultdict(list)
+        mat = self.get_adjacency_matrix()
+        for i in range(self.n_nodes):
+            if mat[i].indices.size != 0: #don't count nodes that are end-points
+                repeats[str(mat[i].indices)].append(self.get_node_name(i))
+        return [v for (k,v) in iteritems(repeats) if len(v) > 1]
+
+    def summary(self):
+        summary_d = []
+        connection_count = self.count_relations()
+        node_count = self.count_node_edges()
+        zero_index = -1
+        for pos,t in enumerate(node_count):
+            if t[1] == 0:
+                zero_index = pos
+                break
+        eq_nodes = self.equivalent_nodes()
+        nn = min(5, self.n_nodes)
+        nnb = min(nn, zero_index)
+        nr = min(5, self.n_rels)
+        summary_d += [('n nodes', self.n_nodes)]
+        summary_d += [('n relation types', self.n_rels)]
+        summary_d += [('n connections',  sum(n for _, n in connection_count))]
+        summary_d += [('top 5 nodes', node_count[:nn])]
+        summary_d += [('bottom 5 nodes (non-zero)', node_count[zero_index-nnb:zero_index])]
+        summary_d += [('n terminal nodes', len(node_count[zero_index:]))]
+        #summary_d += [('terminal nodes', [i[0] for i in node_count[zero_index:]])]
+        summary_d += [('top 5 relations',connection_count[:nr])]
+        summary_d += [('bottom 5 relations', connection_count[-nr:])]
+        summary_d += [('equivalent nodes', eq_nodes)]
+        for e in summary_d:
+            print('{}: {}'.format(e[0],e[1]))
