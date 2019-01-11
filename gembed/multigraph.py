@@ -124,7 +124,7 @@ class Multigraph:
                 break
         eq_nodes = self.equivalent_nodes()
         n_nodes_print = min(5, self.n_nodes)
-        n_btm_nodes_print = min(nn, zero_index)
+        n_btm_nodes_print = min(n_nodes_print, zero_index)
         n_rels_print = min(5, self.n_rels)
         summary_d += [('n nodes', self.n_nodes)]
         summary_d += [('n relation types', self.n_rels)]
