@@ -27,7 +27,7 @@ cd gembed
 python get_graph_embeddings.py -a rgcn -p data/aifb -t data/person_affiliations.csv -e 50 -d 16 -n rgcn
 python get_graph_embeddings.py -a auto -p data/aifb -e 1 -d 16 -n autoencode
 ```
-The autoencoder needs about 50 epochs to produce a good embedding, but that takes a while.
+The autoencoder needs about 50 epochs to produce a good embedding, but that can take more than an hour.
 
 5. To plot the AIFB embeddings, there is an iPython notebook you can use.
 ```
