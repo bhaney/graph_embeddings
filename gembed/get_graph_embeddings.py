@@ -13,7 +13,7 @@ def save_object(obj, filename):
 
 def get_graph(csv_files):
     # create multigraph from list of connections
-    if not isinstance(csv_files, list):
+    if isinstance(csv_files, str):
         csv_files = [csv_files]
     graph = Multigraph()
     for f in csv_files:
