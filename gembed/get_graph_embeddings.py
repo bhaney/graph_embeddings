@@ -11,10 +11,12 @@ def save_object(obj, filename):
     with open(filename, 'wb') as output:  # Overwrites any existing file.
         pickle.dump(obj, output, pickle.HIGHEST_PROTOCOL)
 
-def get_graph(list_of_files):
+def get_graph(csv_files):
     # create multigraph from list of connections
+    if not isinstance(csv_files, list):
+        csv_files = [csv_files]
     graph = Multigraph()
-    for f in list_of_files:
+    for f in csv_files:
         graph.read_csv(f)
     return graph
 
