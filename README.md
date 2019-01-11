@@ -1,6 +1,6 @@
 # Graph Embeddings
 
-A package for finding embedding vectors for relational graphs. Input a CSV file or a directory of CSVs of connections in a graph, and get an output of a list of `(node_name, node_embedding)` for each node in the graph. 
+A package for finding embedding vectors for relational graphs. Input a CSV file (or a directory of CSVs) of connections in a graph, and get an output of a list of `(node_name, node_embedding)` for each node in the graph. 
 
 
 ## Installation
