@@ -123,18 +123,18 @@ class Multigraph:
                 zero_index = pos
                 break
         eq_nodes = self.equivalent_nodes()
-        nn = min(5, self.n_nodes)
-        nnb = min(nn, zero_index)
-        nr = min(5, self.n_rels)
+        n_nodes_print = min(5, self.n_nodes)
+        n_btm_nodes_print = min(nn, zero_index)
+        n_rels_print = min(5, self.n_rels)
         summary_d += [('n nodes', self.n_nodes)]
         summary_d += [('n relation types', self.n_rels)]
         summary_d += [('n connections',  sum(n for _, n in connection_count))]
-        summary_d += [('top 5 nodes', node_count[:nn])]
-        summary_d += [('bottom 5 nodes (non-zero)', node_count[zero_index-nnb:zero_index])]
+        summary_d += [('5 most connected nodes', node_count[:n_nodes_print])]
+        summary_d += [('5 least connected nodes (non-terminal)', node_count[zero_index-n_btm_nodes_print:zero_index])]
         summary_d += [('n terminal nodes', len(node_count[zero_index:]))]
         #summary_d += [('terminal nodes', [i[0] for i in node_count[zero_index:]])]
-        summary_d += [('top 5 relations',connection_count[:nr])]
-        summary_d += [('bottom 5 relations', connection_count[-nr:])]
+        summary_d += [('5 most frequent relations',connection_count[:n_rels_print])]
+        summary_d += [('5 least frequent relations', connection_count[-n_rels_print:])]
         summary_d += [('equivalent nodes', eq_nodes)]
         for e in summary_d:
             print('{}: {}'.format(e[0],e[1]))
