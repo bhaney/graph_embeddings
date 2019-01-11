@@ -1,10 +1,10 @@
 # Graph Embeddings
 
-A package for finding embedding vectors for relational graphs. Input a CSV file (or a directory of CSVs) of connections in a graph, and get an output of a list of `(node_name, node_embedding)` for each node in the graph. 
+A package for creating embedding vectors for nodes in a relational graph. Input a CSV file (or a directory of CSVs) of connections in a graph, and receive a list of `(node_name, node_embedding)` tuples for each node in the graph. 
 
 
 ## Installation
-This package was created with Python 2.7 and works with Keras 2.2.4 using Tensorflow 1.12.0 as the backend. It's recommended to use an anaconda instance to set up the environment in order to ensure no conflicts between various packages. You can download the anaconda package manager here: https://www.anaconda.com/download/
+This package was created with Python 2.7 and works with Keras 2.2.4 using Tensorflow 1.12.0 as the backend. It's recommended to use Anaconda to set up a clean environment in order to ensure no conflicts between various packages. You can download the anaconda package manager here: https://www.anaconda.com/download/
 
 1. Create the anaconda enviorment
 ```
@@ -67,7 +67,7 @@ rufus,LOCATED_IN,chicago
 chicago,IS,city
 ```
 
-The output of the program will be a list of `(node_name, node_embedding)` for each node in the graph. It will be saved as a `.pkl` file in the `results/` directory.
+The output of `get_graph_embeddings` will be a list of `(node_name, node_embedding)` for each node in the graph. It you run it from the command line, the embeddings will be saved as a `.pkl` file in the `results/` directory.
 
 ## Acknowledgements
 
