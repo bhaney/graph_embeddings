@@ -67,7 +67,7 @@ rufus,LOCATED_IN,chicago
 chicago,IS,city
 ```
 
-The output of the program will be a list of `(node_name, node_embeddings)`. It will be saved as a `.pkl` file in the `results/` directory.
+The output of the program will be a list of `(node_name, node_embedding)` for each node in the graph. It will be saved as a `.pkl` file in the `results/` directory.
 
 ## Acknowledgements
 
