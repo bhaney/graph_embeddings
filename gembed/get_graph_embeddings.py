@@ -6,6 +6,7 @@ import argparse, pickle, os
 from gembed.multigraph import Multigraph
 from gembed.embedding_models.rgcn_embeddings import rgcn_embeddings
 from gembed.embedding_models.autoencoder_embeddings import autoencoder
+from gembed.embedding_models.gcn_auto_embeddings import gcn_auto_embeddings
 
 def save_object(obj, filename):
     with open(filename, 'wb') as output:  # Overwrites any existing file.
@@ -27,6 +28,8 @@ def get_graph_embeddings(algo, graph, embedding_dim, target_csv=None, epochs=1):
         embeddings = rgcn_embeddings(graph, embedding_dim, target_csv, epochs)
     elif algo == "auto":
         embeddings = autoencoder(graph, embedding_dim, epochs)
+    elif algo == "gcnauto":
+        embeddings = gcn_auto_embeddings(graph, embedding_dim, epochs)
     return zip(graph.node_names, embeddings)
 
 def csv_list_from_dir(dir_path):
@@ -34,18 +37,18 @@ def csv_list_from_dir(dir_path):
 
     
 if __name__ == "__main__":
+    algos = ['auto','rgcn','gcnauto']
     parser = argparse.ArgumentParser()
     group = parser.add_mutually_exclusive_group()
     group.add_argument("-p", "--path", help="path of directory of csv files.")
     group.add_argument("-f", "--files",action='append', help="csv files with connections, separated by commas.")
     parser.add_argument("-n", "--name", help="name for output files.", required=True)
-    parser.add_argument("-a", "--algo", help="which algorithm to use. auto or rgcn", required=True)
+    parser.add_argument("-a", "--algo", help="which algorithm to use. {}".format(algos), required=True)
     parser.add_argument("-d", "--dim", type=int, help="embedding dimension.", required=True)
     parser.add_argument("-e", "--epochs", type=int, help="number of epochs.", required=False)
     parser.add_argument("-t", "--target", help="csv file with targets for training.")
     args = parser.parse_args()
     # must use one of the available algorithms
-    algos = ['auto','rgcn']
     if args.algo not in algos:
         raise ValueError("algo argument must be one of these: {}".format(algos))
     list_of_files = list()
