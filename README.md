@@ -58,17 +58,42 @@ The CSV file has to represent the graph by triplet connection of `subject_node, 
 Example:
 ```
 dog,IS,mammal
+dog,MAKES_SOUND,woof
 cat,IS,mammal
+cat,MAKES_SOUND,meow
 mouse,IS,mammal
+mouse,MAKES_SOUND,squeak
+ball,IS,toy
+toy,MAKES_SOUND,squeak
 mammal,HAS,fur
 rufus,INSTANCE_OF,dog
+spot,INSTANCE_OF,dog
 algernon,INSTANCE_OF,mouse
 rufus,LOCATED_IN,chicago
+spot,LOCATED_IN,chicago
 chicago,IS,city
 ```
 
 The output of `get_graph_embeddings` will be a list of `(node_name, node_embedding)` for each node in the graph. It you run it from the command line, the embeddings will be saved as a `.pkl` file in the `results/` directory.
 
+To see a summary of facts about the graph, you can use the `summary()` function from the Multigraph class. As an example:
+
+```
+python
+>>> from gembed.get_graph_embeddings import get_graph
+>>> g = get_graph(['gembed/data/example_graph.csv'])
+Processed 15 lines.
+>>> g.summary()
+n nodes: 15
+n relation types: 5
+n connections: 15
+5 most connected nodes: [(u'dog', 2), (u'cat', 2), (u'mouse', 2), (u'rufus', 2), (u'spot', 2)]
+5 least connected nodes (non-terminal): [(u'mammal', 1), (u'ball', 1), (u'toy', 1), (u'algernon', 1), (u'chicago', 1)]
+n terminal nodes: 5
+5 most frequent relations: [(u'IS', 5), (u'MAKES_SOUND', 4), (u'INSTANCE_OF', 3), (u'LOCATED_IN', 2), (u'HAS', 1)]
+5 least frequent relations: [(u'IS', 5), (u'MAKES_SOUND', 4), (u'INSTANCE_OF', 3), (u'LOCATED_IN', 2), (u'HAS', 1)]
+equivalent nodes: [[u'rufus', u'spot']]
+```
 ## Acknowledgements
 
 The relation-GCN algorithm is taken from an implementation of _Modeling Relational Data with Graph Convolutional Networks_ (2017) by Michael Schlichtkrull, Thomas N. Kipf, Peter Bloem, Rianne van den Berg, Ivan Titov, and Max Welling.
