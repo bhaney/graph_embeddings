@@ -67,7 +67,6 @@ def rgcn_model(num_nodes, encoding_dim, output_dim, support, learn_rate=0.01, dr
     from rgcn.layers.graph import GraphConvolution 
     from rgcn.layers.input_adj import InputAdj 
     #hyper parameters   
-    encoding_dim = encoding_dim
     L2 = l2_regularization
     LR = learn_rate
     DO = dropout
