@@ -25,7 +25,7 @@ python setup.py install
 ```
 cd gembed
 python get_graph_embeddings.py -a rgcn -p data/aifb -t data/person_affiliations.csv -e 50 -d 16 -n rgcn
-python get_graph_embeddings.py -a auto -p data/aifb -e 1 -d 16 -n autoencode
+python get_graph_embeddings.py -a ae -p data/aifb -e 1 -d 16 -n autoencode
 ```
 The autoencoder needs about 50 epochs to produce a good embedding, but that can take more than an hour.
 
@@ -45,7 +45,7 @@ The program `get_graph_embeddings.py` takes the following arguments:
   -f FILES,  --files FILES,   If you only want to run over one file, give path of the single CSV file..
 
   -n NAME,   --name NAME,     Name of the output file of the embeddings in the `results/` directory.
-  -a ALGO,   --algo ALGO,     Which algorithm to use. `auto` or `rgcn` available.
+  -a ALGO,   --algo ALGO,     Which algorithm to use.
   -d DIM,    --dim DIM,       Desired embedding dimension.
   -e EPOCHS, --epochs EPOCHS, Number of epochs to train.
   -t TARGET, --target TARGET, CSV file with targets for training.

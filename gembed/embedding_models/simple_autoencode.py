@@ -33,7 +33,7 @@ def autoencoder_model(input_dim, encoding_dim):
     return (embedding_model, training_model)
 
 def train_autoencoder(model, data, epochs=1):
-    model.fit(data, y=data, epochs=epochs, batch_size=data.shape[1], verbose=1)
+    model.fit(data, y=data, epochs=epochs, verbose=1) #batch_size=data.shape[1]
 
 def autoencoder(graph, embedding_dim, epochs=1):
     num_nodes = graph.n_nodes
