@@ -2,7 +2,8 @@ from __future__ import print_function
 
 #Using Keras 2
 from keras.engine import Layer
-from keras.layers import Dense
+from keras.layers import Dense, Activation
+from keras import activations
 from keras import backend as K
 
 
@@ -35,3 +36,31 @@ class DenseTied(Dense):
         if self.activation is not None:
             output = self.activation(output)
         return output
+
+class DistMult(Activation):
+    # Input shape
+    # 3D tensor with shape: `(batch_size, sequence_length, input_dim)`.
+    # Output shape
+    # 2D tensor with shape: `(batch_size, 1)`.
+    def __init__(self, activation, input_length=None,  **kwargs):
+        self.activation = activations.get(activation)
+        self.input_length = input_length
+        super(DistMult, self).__init__(self.activation, **kwargs)
+    
+    def compute_output_shape(self, input_shape):
+        if len(input_shape) < 3:
+            raise ValueError("'input_shape' is {}, must be at least a 3D tensor.".format(input_shape))
+        batch_size = input_shape[0]
+        return (batch_size, 1)
+    
+    def call(self, inputs):
+        output = K.prod(inputs, axis=1, keepdims=True)
+        output = K.sum(output, axis=2, keepdims=False)
+        if self.activation is not None:
+            output = self.activation(output)
+        return output
+
+    def get_config(self):
+        config = {'input_length': self.input_length}
+        base_config = super(DistMult, self).get_config()
+        return dict(list(base_config.items()) + list(config.items()))

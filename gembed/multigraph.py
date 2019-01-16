@@ -72,7 +72,22 @@ class Multigraph:
             print("Deleted relation "+relation+" from graph.")
         else:
             print("Relation "+relation+" not in graph.")
+    
+    def get_connections_list_k(self, k):
+        #relations will be encoded as coming after edges. rel = n_nodes + rel_i
+        edges = []
+        adj_matrix = self.get_adjacency_matrix_k(k)
+        for row_i in range(adj_matrix.shape[0]):
+            for column_i in adj_matrix[row_i].indices:
+                edges.append( (row_i, self.n_nodes+self.rels[k], column_i) )
+        return edges
 
+    def get_connections_list(self):
+        #relations will be encoded as coming after edges. rel = n_nodes + rel_i
+        edges = []
+        for i in self.rel_names:
+            edges.extend(self.get_connections_list_k(i))
+        return edges
 
     def get_adjacency_matrix(self):
         #interleave all the columns from the individual adjacency matrices

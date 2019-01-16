@@ -6,6 +6,7 @@ import argparse, pickle, os
 from gembed.multigraph import Multigraph, get_graph, csv_list_from_dir
 from gembed.embedding_models.rgcn_node_classification import rgcn_embeddings
 from gembed.embedding_models.simple_autoencode import autoencoder
+from gembed.embedding_models.distmult import distmult_embeddings
 
 def save_object(obj, filename):
     with open(filename, 'wb') as output:  # Overwrites any existing file.
@@ -18,10 +19,12 @@ def get_graph_embeddings(algo, graph, embedding_dim, target_csv=None, epochs=1):
         embeddings = rgcn_embeddings(graph, embedding_dim, target_csv, epochs)
     elif algo == "ae":
         embeddings = autoencoder(graph, embedding_dim, epochs)
+    elif algo == "distmult":
+        embeddings = distmult_embeddings(graph, embedding_dim, epochs)
     return zip(graph.node_names, embeddings)
 
 if __name__ == "__main__":
-    algos = ['ae','rgcn']
+    algos = ['ae','rgcn','distmult']
     parser = argparse.ArgumentParser()
     group = parser.add_mutually_exclusive_group()
     group.add_argument("-p", "--path", help="path of directory of csv files.")
