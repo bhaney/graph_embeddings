@@ -79,7 +79,7 @@ class Multigraph:
         adj_matrix = self.get_adjacency_matrix_k(k)
         for row_i in range(adj_matrix.shape[0]):
             for column_i in adj_matrix[row_i].indices:
-                edges.append( (row_i, self.n_nodes+self.rels[k], column_i) )
+                edges.append( (row_i, self.rels[k], column_i) )
         return edges
 
     def get_connections_list(self):
