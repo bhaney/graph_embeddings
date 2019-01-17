@@ -29,6 +29,7 @@ class Multigraph:
         self.node_names = []
         self.rel_names = []
         self.sparse_graph = {} #{relation: [row list, col list, data list]}
+        self.edges = {} #{relation: [(src, rel, tar), (src, rel, tar), ... ]}
     
     def read_csv(self, csv_file, delimiter=",", exclude_first_row=False):
         i = 0
@@ -61,18 +62,29 @@ class Multigraph:
             self.rel_names.append(rel)
             self.n_rels += 1
             self.sparse_graph[self.rels[rel]] = [[],[],[]] #{relation: [row, col, data]}
+            self.edges[self.rels[rel]] = set() #{relation: {(src, rel, tar), (src, rel, tar), ... } }
         # add new connection to graph
         self.sparse_graph[self.rels[rel]][0].append(self.nodes[src])
         self.sparse_graph[self.rels[rel]][1].append(self.nodes[targ])
         self.sparse_graph[self.rels[rel]][2].append(1)
+        self.edges[self.rels[rel]].add( (self.nodes[src], self.rels[rel], self.nodes[targ]) )
     
     def delete_relation(self, relation):
         if (relation in self.rels) and (self.rels[relation] in self.sparse_graph):
             self.sparse_graph[self.rels[relation]] = [[],[],[]] #set it to empty
+            self.edges[self.rels[rel]] = set() #set it to empty
             print("Deleted relation "+relation+" from graph.")
         else:
             print("Relation "+relation+" not in graph.")
+    
+    def get_connections_list_k(self, k):
+        return list(self.edges[self.rels[k]])
 
+    def get_connections_list(self):
+        edges = []
+        for i in self.rel_names:
+            edges.extend(self.get_connections_list_k(i))
+        return edges
 
     def get_adjacency_matrix(self):
         #interleave all the columns from the individual adjacency matrices
