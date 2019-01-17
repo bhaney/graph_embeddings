@@ -18,6 +18,8 @@ from keras.models import Model
 from keras.optimizers import Adam
 from keras.regularizers import l2
 
+from sklearn.metrics import classification_report
+
 def get_train_test_labels(graph, filename, train_frac=0.8):
     training_dict = defaultdict(list)
     train_ids = list()
@@ -63,7 +65,8 @@ def rgcn_inputs(graph):
     return A
 
 def rgcn_model(num_nodes, encoding_dim, output_dim, support, learn_rate=0.01, dropout=0.0, l2_regularization=0.0):
-    from rgcn.layers.graph import GraphConvolution 
+    #from rgcn.layers.graph import GraphConvolution 
+    from gembed.layers import GraphConvolution 
     from rgcn.layers.input_adj import InputAdj 
     #hyper parameters   
     L2 = l2_regularization
@@ -85,7 +88,7 @@ def rgcn_model(num_nodes, encoding_dim, output_dim, support, learn_rate=0.01, dr
     # Compile model
     training_model = Model(inputs=[X_in] + A_in, outputs=Y)
     embedding_model = Model(inputs=[X_in] + A_in, outputs=the_code)
-    training_model.compile(loss='categorical_crossentropy', optimizer=Adam(lr=LR))
+    training_model.compile(loss='categorical_crossentropy', optimizer=Adam(lr=LR), metrics=['accuracy'] )
     return (embedding_model, training_model)
 
 def train_rgcn(model, data,  y_train, y_val, idx_train, idx_val, epochs=10, train_mask=None):
@@ -126,16 +129,24 @@ def rgcn_embeddings(graph, embedding_dim, target_csv, epochs=10):
     y, train_idx, test_idx = get_train_test_labels(graph, target_csv, train_frac=0.8)
     y_train, y_val, y_test, idx_train, idx_val, idx_test = get_splits(y, train_idx, test_idx, True)
     train_mask = sample_mask(idx_train, y.shape[0])
+    test_mask = sample_mask(idx_test, y.shape[0])
     # make model for embedding
     output_dim = y_train.shape[1]
     embedding_model, training_model = rgcn_model(num_nodes, embedding_dim, output_dim, support)
     #train model
+    #training_model.fit([X]+A, y=y_train, batch_size=num_nodes, sample_weight=train_mask, epochs=epochs, shuffle=False, verbose=1)
     preds = train_rgcn(training_model, [X] + A, y_train, y_val, idx_train, idx_val, epochs=epochs, train_mask=train_mask)
     # print the test results
-    test_loss, test_acc = evaluate_preds(preds, [y_test], [idx_test])
-    print("Test set results:",
-          "loss= {:.4f}".format(test_loss[0]),
-          "accuracy= {:.4f}".format(test_acc[0]))
+    #score = training_model.evaluate([X]+A, y = y_test, verbose=1)
+    #print('Test loss: {}'.format(score[0]))
+    #print('Test accuracy: {}'.format(score[1]))
+    #result = training_model.predict([x_test_nodes,x_test_relations])
+    #preds = [1 if i > 0.5 else 0 for i in result]
+    #print(classification_report(y_test, preds))
+    #test_loss, test_acc = evaluate_preds(preds, [y_test], [idx_test])
+    #print("Test set results:",
+    #      "loss= {:.4f}".format(test_loss[0]),
+    #      "accuracy= {:.4f}".format(test_acc[0]))
     #get embeddings
     embeddings = embedding_model.predict([X] + A, batch_size=num_nodes)
     return embeddings
