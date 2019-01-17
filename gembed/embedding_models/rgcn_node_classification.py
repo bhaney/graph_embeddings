@@ -125,7 +125,7 @@ def rgcn_embeddings(graph, embedding_dim, target_csv, epochs=10):
     # get targets for model
     y, train_idx, test_idx = get_train_test_labels(graph, target_csv, train_frac=0.8)
     y_train, y_val, y_test, idx_train, idx_val, idx_test = get_splits(y, train_idx, test_idx, True)
-    train_mask = sample_mask(idx_train, y.shape[0])
+    train_mask = sample_mask(idx_train, num_nodes)
     # make model for embedding
     output_dim = y_train.shape[1]
     embedding_model, training_model = rgcn_model(num_nodes, embedding_dim, output_dim, support)

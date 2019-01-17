@@ -26,12 +26,13 @@ python setup.py install
 cd gembed
 python get_graph_embeddings.py -a rgcn -p data/aifb -t data/person_affiliations.csv -e 50 -d 16 -n rgcn
 python get_graph_embeddings.py -a ae -p data/aifb -e 1 -d 16 -n autoencode
+python get_graph_embeddings.py -a distmult -p data/aifb -e 10 -d 16 -n distmult
 ```
 The autoencoder needs about 50 epochs to produce a good embedding, but that can take more than an hour.
 
 5. To plot the AIFB embeddings, there is an iPython notebook you can use.
 ```
-conda install jupyter scikit-learn matplotlib
+conda install jupyter matplotlib
 conda install -c conda-forge umap-learn
 jupyter notebook
 ```
