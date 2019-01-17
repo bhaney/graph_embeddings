@@ -129,7 +129,7 @@ class GraphConvolution(Layer):
 
     def call(self, inputs, mask=None):
         features = inputs[0]
-        A = inputs[1:]
+        A = inputs[1]
 
         # convolve
         supports = list()

@@ -10,7 +10,6 @@ from future.utils import iteritems
 
 from gembed.multigraph import Multigraph
 from gembed.layers import DistMult
-from gembed.utils import evaluate_preds_sigmoid
 
 import keras.backend as K
 from keras.layers import Input, Dropout, Embedding, concatenate
