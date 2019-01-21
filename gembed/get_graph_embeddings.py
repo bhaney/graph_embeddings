@@ -29,6 +29,7 @@ if __name__ == "__main__":
     group = parser.add_mutually_exclusive_group()
     group.add_argument("-p", "--path", help="path of directory of csv files.")
     group.add_argument("-f", "--files",action='append', help="csv files with connections, separated by commas.")
+    parser.add_argument("-u", "--undirected", action='store_true', help="Flag for undirected graphs.")
     parser.add_argument("-n", "--name", help="name for output files.", required=True)
     parser.add_argument("-a", "--algo", help="which algorithm to use: {}".format(algos), required=True)
     parser.add_argument("-d", "--dim", type=int, help="embedding dimension.", required=True)
@@ -54,12 +55,12 @@ if __name__ == "__main__":
         target_csv = args.target
     name = args.name
     #Get the embedings!
-    graph = get_graph(list_of_files)
+    graph = get_graph(list_of_files, args.undirected)
     embeddings = get_graph_embeddings(args.algo, graph, args.dim, target_csv=target_csv, epochs=epochs)
     #Save it to disk
     if not os.path.isdir(os.path.join(os.getcwd(),'results')):
         os.mkdir(os.path.join(os.getcwd(),'results'))
     save_object(graph, os.path.join(os.getcwd(),'results',name+'_graph.pkl'))
-    print("Saved graph to results")
+    print("Saved graph "+name+"_graph.pkl to results")
     save_object(embeddings, os.path.join(os.getcwd(),'results',name+'_embeddings.pkl'))
-    print("Saved embeddings to results")
+    print("Saved embeddings "+name+"_embeddings.pkl to results")

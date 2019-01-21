@@ -8,11 +8,15 @@ from future.utils import iteritems
 from collections import defaultdict, Counter
 from scipy.sparse import csr_matrix, hstack
 
-def get_graph(csv_files):
+def get_graph(csv_files, undirected=False):
+    if undirected:
+        print('Graph is undirected.')
+    else:
+        print('Graph is directed.')
     # create multigraph from list of connections
     if isinstance(csv_files, str):
         csv_files = [csv_files]
-    graph = Multigraph()
+    graph = Multigraph(undirected)
     for f in csv_files:
         graph.read_csv(f)
     return graph
@@ -21,9 +25,9 @@ def csv_list_from_dir(dir_path):
     return [os.path.join(os.getcwd(),dir_path,f) for f in os.listdir(dir_path) if f[-4:] == '.csv']
 
 class Multigraph:
-    def __init__(self, directed=False):
+    def __init__(self, undirected=False):
         # The numbering system should be internal to the object
-        self.directed = directed
+        self.undirected = undirected
         self.n_nodes = 0
         self.n_rels = 0
         self.nodes = {}
@@ -103,7 +107,7 @@ class Multigraph:
         graph_k = self.sparse_graph[self.rels[k]]
         shape = (self.n_nodes,self.n_nodes)
         sparse_adj_matrix =  csr_matrix((graph_k[2], (graph_k[0],graph_k[1])), shape=shape, dtype=np.int8)
-        if self.directed:
+        if self.undirected:
             transpose_adj_matrix = csr_matrix((graph_k[2], (graph_k[1],graph_k[0])), shape=shape, dtype=np.int8)
             return (sparse_adj_matrix + transpose_adj_matrix)
         else:
@@ -116,7 +120,7 @@ class Multigraph:
         shape = (self.n_nodes,self.n_nodes)
         #switch the rows and columns
         sparse_adj_matrix =  csr_matrix((graph_k[2], (graph_k[1],graph_k[0])), shape=shape, dtype=np.int8)
-        if self.directed:
+        if self.undirected:
             transpose_adj_matrix = csr_matrix((graph_k[2], (graph_k[0],graph_k[1])), shape=shape, dtype=np.int8)
             return (sparse_adj_matrix + transpose_adj_matrix)
         else:
@@ -137,8 +141,7 @@ class Multigraph:
     def count_relations(self):
         relation_counter = []
         for k in self.rel_names:
-            mat = self.get_adjacency_matrix_k(k)
-            relation_counter.append((k,mat.size))
+            relation_counter.append( (k,len(self.edges[self.rels[k]])) )
         #sort from greatest to least
         relation_counter.sort(key=operator.itemgetter(1), reverse=True)
         return relation_counter
@@ -156,7 +159,8 @@ class Multigraph:
         repeats = defaultdict(list)
         mat = self.get_adjacency_matrix()
         for i in range(self.n_nodes):
-            if mat[i].indices.size != 0: #don't count nodes that are end-points
+            if( (not self.undirected) and mat[i].indices.size > 0) or (self.undirected and mat[i].indices.size > 1): 
+                #don't count nodes that are end-points
                 repeats[str(mat[i].indices)].append(self.get_node_name(i))
         return [v for (k,v) in iteritems(repeats) if len(v) > 1]
 
@@ -165,14 +169,16 @@ class Multigraph:
         connection_count = self.count_relations()
         node_count = self.count_node_edges()
         zero_index = -1
+        final = 1 if self.undirected else 0
         for pos,t in enumerate(node_count):
-            if t[1] == 0:
+            if t[1] == final:
                 zero_index = pos
                 break
         eq_nodes = self.equivalent_nodes()
         n_nodes_print = min(5, self.n_nodes)
         n_btm_nodes_print = min(n_nodes_print, zero_index)
         n_rels_print = min(5, self.n_rels)
+        summary_d += [('Undirected graph?', self.undirected)]
         summary_d += [('n nodes', self.n_nodes)]
         summary_d += [('n relation types', self.n_rels)]
         summary_d += [('n connections',  sum(n for _, n in connection_count))]
