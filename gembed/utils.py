@@ -15,7 +15,7 @@ def laplacian(A):
     d_inv[np.isinf(d_inv)] = 0.
     D_inv = sp.diags(d_inv)
     I = sp.identity(A.get_shape()[0]).tocsr()
-    L = (I - D_inv.dot(adj_matrix)).tocsr()
+    L = (I - D_inv.dot(A)).tocsr()
     return L 
 
 def get_train_test_labels(graph, filename, train_frac=0.8):

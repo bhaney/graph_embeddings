@@ -9,7 +9,7 @@ def save_object(obj, filename):
     with open(filename, 'wb') as output:  # Overwrites any existing file.
         pickle.dump(obj, output, pickle.HIGHEST_PROTOCOL)
 
-def get_graph_embeddings(algo, graph, embedding_dim, target_csv=None, epochs=1):
+def get_graph_embeddings(algo, graph, embedding_dim, target_csv=None, features=None, epochs=1):
     if algo == "rgcn":
         from gembed.embedding_models.rgcn_node_classification import rgcn_embeddings
         if target_csv is None:
@@ -21,27 +21,35 @@ def get_graph_embeddings(algo, graph, embedding_dim, target_csv=None, epochs=1):
     elif algo == "distmult":
         from gembed.embedding_models.distmult import distmult_embeddings
         embeddings = distmult_embeddings(graph, embedding_dim, epochs)
+    elif algo == "spectral":
+        if target_csv is None:
+            raise ValueError("Spectral requires a target CSV file.")
+        if features is None:
+            raise ValueError("Spectral requires a features JSON file.")
+        from gembed.embedding_models.spectral import spectral_embeddings
+        embeddings = spectral_embeddings(graph, features, target_csv, embedding_dim, epochs)
     return zip(graph.node_names, embeddings)
 
 if __name__ == "__main__":
-    algos = ['ae','rgcn','distmult']
+    algos = ['ae','rgcn','distmult','spectral']
     parser = argparse.ArgumentParser()
     group = parser.add_mutually_exclusive_group()
     group.add_argument("-p", "--path", help="path of directory of csv files.")
-    group.add_argument("-f", "--files",action='append', help="csv files with connections, separated by commas.")
+    group.add_argument("-i", "--input",action='append', help="csv files with connections")
     parser.add_argument("-u", "--undirected", action='store_true', help="Flag for undirected graphs.")
     parser.add_argument("-n", "--name", help="name for output files.", required=True)
     parser.add_argument("-a", "--algo", help="which algorithm to use: {}".format(algos), required=True)
     parser.add_argument("-d", "--dim", type=int, help="embedding dimension.", required=True)
     parser.add_argument("-e", "--epochs", type=int, help="number of epochs.", required=False)
     parser.add_argument("-t", "--target", help="csv file with targets for training.")
+    parser.add_argument("-f", "--features", help="json file with features for training.")
     args = parser.parse_args()
     # must use one of the available algorithms
     if args.algo not in algos:
         raise ValueError("algo argument must be one of these: {}".format(algos))
     list_of_files = list()
-    if args.files:
-        list_of_files = [os.path.join(os.getcwd(),f) for f in args.files]
+    if args.input:
+        list_of_files = [os.path.join(os.getcwd(),f) for f in args.input]
     elif args.path:
         list_of_files = csv_list_from_dir(args.path)
     print('Using the following CSV files:')
@@ -51,12 +59,15 @@ if __name__ == "__main__":
     if args.epochs:
         epochs = args.epochs
     target_csv = None
+    features = None
     if args.target:
         target_csv = args.target
+    if args.features:
+        features = args.features
     name = args.name
     #Get the embedings!
     graph = get_graph(list_of_files, args.undirected)
-    embeddings = get_graph_embeddings(args.algo, graph, args.dim, target_csv=target_csv, epochs=epochs)
+    embeddings = get_graph_embeddings(args.algo, graph, args.dim, target_csv=target_csv, features=features, epochs=epochs)
     #Save it to disk
     if not os.path.isdir(os.path.join(os.getcwd(),'results')):
         os.mkdir(os.path.join(os.getcwd(),'results'))
