@@ -130,7 +130,6 @@ class SpectralConv(Layer):
         eigenvectors_T = inputs[1]
         features = inputs[2]
         output = K.batch_dot(eigenvectors_T, features)
-        #output = K.conv1d(output, self.kernel, padding='same', data_format=self.data_format)
         output = K.map_fn(self.graph_convolve, output)
         output = K.batch_dot(eigenvectors, output)
         if self.activation is not None:

@@ -28,9 +28,9 @@ def spectral_model(n_nodes, n_features, n_eigen, encoding_dim, output_dim, learn
     LR = learn_rate
     DO = dropout
     #inputs
-    E_in = Input(shape=(n_nodes,n_eigen), sparse=False)
-    E_T_in = Input(shape=(n_eigen,n_nodes), sparse=False)
-    X_in = Input(shape=(n_nodes,n_features), sparse=False)
+    E_in = Input(shape=(n_nodes,n_eigen), sparse=False, name="eigenvectors")
+    E_T_in = Input(shape=(n_eigen,n_nodes), sparse=False, name="eigenvectors_T")
+    X_in = Input(shape=(n_nodes,n_features), sparse=False, name="features")
     # Define model architecture
     ConvLayer1 = SpectralConv(encoding_dim, eigenvectors=n_eigen, activation='relu', kernel_regularizer=l2(L2))
     ConvLayer2 = SpectralConv(output_dim, eigenvectors=n_eigen, activation='softmax')
