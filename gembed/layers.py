@@ -86,11 +86,9 @@ class SpectralConv(Layer):
     def compute_output_shape(self, input_shape):
         feature_shape = input_shape[-1]
         output_shape = (feature_shape[0], feature_shape[1], self.filters)
-        print('compute output shape',output_shape)
         return output_shape  # (batch_size, n_nodes, n_filters)
 
     def build(self, input_shape):
-        print('build',input_shape)
         feature_shape = input_shape[-1]
         if self.data_format == 'channels_first':
             channel_axis = 1

@@ -25,8 +25,8 @@ python setup.py install
 ```
 cd gembed
 python get_graph_embeddings.py -a rgcn -p data/aifb/relations -t data/aifb/person_affiliations.csv -e 50 -d 16 -n rgcn
-python get_graph_embeddings.py -a ae -p data/aifb -e 1 -d 16 -n autoencode
-python get_graph_embeddings.py -a distmult -p data/aifb -e 10 -d 16 -n distmult
+python get_graph_embeddings.py -a ae -p data/aifb/relations -e 1 -d 16 -n autoencode
+python get_graph_embeddings.py -a distmult -p data/aifb/relations -e 10 -d 16 -n distmult
 ```
 The autoencoder needs about 50 epochs to produce a good embedding, but that can take more than an hour.
 
