@@ -24,7 +24,7 @@ python setup.py install
 4. Run the program using the AIFB test data
 ```
 cd gembed
-python get_graph_embeddings.py -a rgcn -p data/aifb -t data/person_affiliations.csv -e 50 -d 16 -n rgcn
+python get_graph_embeddings.py -a rgcn -p data/aifb/relations -t data/aifb/person_affiliations.csv -e 50 -d 16 -n rgcn
 python get_graph_embeddings.py -a ae -p data/aifb -e 1 -d 16 -n autoencode
 python get_graph_embeddings.py -a distmult -p data/aifb -e 10 -d 16 -n distmult
 ```

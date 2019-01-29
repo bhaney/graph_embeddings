@@ -26,6 +26,8 @@ def get_graph_embeddings(algo, graph, embedding_dim, epochs=1, **kwargs):
             raise ValueError("Spectral requires a target CSV file.")
         if 'features' not in kwargs or kwargs['features'] is None:
             raise ValueError("Spectral requires a features JSON file.")
+        if graph.n_rels > 1:
+            raise ValueError("Graph cannot have more than 1 realation to use spectral.")
         from gembed.embedding_models.spectral import spectral_embeddings
         embeddings = spectral_embeddings(graph, embedding_dim, kwargs['features'], kwargs['target_csv'],  epochs, kwargs['n_eigen'])
     return zip(graph.node_names, embeddings)
