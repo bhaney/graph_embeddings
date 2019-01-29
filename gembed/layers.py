@@ -100,7 +100,9 @@ class SpectralConv(Layer):
             raise ValueError('The channel dimension of the inputs '
                              'should be defined. Found `None`.')
         input_dim = feature_shape[channel_axis]
-	kernel_shape = (self.n_eigen, input_dim, self.filters)
+        self.input_dim = input_dim
+	#kernel_shape = (self.n_eigen, input_dim, self.filters)
+	kernel_shape = (self.filters, self.n_eigen, self.input_dim)
         self.kernel = self.add_weight(shape=kernel_shape,
                                       initializer=self.kernel_initializer,
                                       name='kernel',
@@ -108,6 +110,16 @@ class SpectralConv(Layer):
 				      constraint=self.kernel_constraint)
         #self.input_spec = InputSpec(ndim=3, axes={channel_axis: input_dim})
         self.built = True
+
+    def graph_convolve(self, inputs):
+        # input 2D tensor with shape (n_eigen, n_features)
+        # kernel is 3D tensor with shape (n_filters, n_eigen, n_features)
+        output = K.tile(inputs, (self.filters, 1)) #tile the input as many times as there are filters
+        output = K.reshape(output, (self.filters, self.n_eigen, self.input_dim)) 
+        output = output * self.kernel # haddamard product with filters
+        output = K.sum(output, axis=-1) # sum along feature dimension
+        output = K.transpose(output) # now has shape (n_eigen, n_filters)
+        return output 
 
     def call(self, inputs):
         # input 3D tensor with shape: (batch_size, n_nodes, n_features)
@@ -118,7 +130,8 @@ class SpectralConv(Layer):
         eigenvectors_T = inputs[1]
         features = inputs[2]
         output = K.batch_dot(eigenvectors_T, features)
-        output = K.conv1d(output, self.kernel, padding='same', data_format=self.data_format)
+        #output = K.conv1d(output, self.kernel, padding='same', data_format=self.data_format)
+        output = K.map_fn(self.graph_convolve, output)
         output = K.batch_dot(eigenvectors, output)
         if self.activation is not None:
             output = self.activation(output)
