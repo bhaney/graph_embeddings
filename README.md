@@ -1,6 +1,6 @@
 # Graph Embeddings
 
-A package for creating embedding vectors for nodes in a relational graph. Input a CSV file (or a directory of CSVs) of connections in a graph, and receive a list of `(node_name, node_embedding)` tuples for each node in the graph. 
+A package for creating embedding vectors for nodes in a relational graph. Input a CSV file (or a directory of CSVs) of connections in a graph (as well as optional features of the nodes of the graph), and receive a list of `(node_name, node_embedding)` tuples for each node in the graph. 
 
 
 ## Installation
@@ -24,9 +24,9 @@ python setup.py install
 4. Run the program using the AIFB test data
 ```
 cd gembed
-python get_graph_embeddings.py -a rgcn -p data/aifb -t data/person_affiliations.csv -e 50 -d 16 -n rgcn
-python get_graph_embeddings.py -a ae -p data/aifb -e 1 -d 16 -n autoencode
-python get_graph_embeddings.py -a distmult -p data/aifb -e 10 -d 16 -n distmult
+python get_graph_embeddings.py -a rgcn -p data/aifb/relations -t data/aifb/person_affiliations.csv -e 50 -d 16 -n rgcn
+python get_graph_embeddings.py -a ae -p data/aifb/relations -e 1 -d 16 -n autoencode
+python get_graph_embeddings.py -a distmult -p data/aifb/relations -e 10 -d 16 -n distmult
 ```
 The autoencoder needs about 50 epochs to produce a good embedding, but that can take more than an hour.
 
@@ -42,14 +42,18 @@ Then select `plot_aifb_graph_embeddings.ipynb`
 
 The program `get_graph_embeddings.py` takes the following arguments:
 ```
-  -p PATH,   --path PATH,     Provide path to the directory of .CSV files.
-  -f FILES,  --files FILES,   If you only want to run over one file, give path of the single CSV file..
+  -p PATH,      --path PATH,          Provide path to the directory of .CSV files.
+  -i INPUT,     --input INPUT,        If you only want to run over one file, give path of the single CSV file..
 
-  -n NAME,   --name NAME,     Name of the output file of the embeddings in the `results/` directory.
-  -a ALGO,   --algo ALGO,     Which algorithm to use.
-  -d DIM,    --dim DIM,       Desired embedding dimension.
-  -e EPOCHS, --epochs EPOCHS, Number of epochs to train.
-  -t TARGET, --target TARGET, CSV file with targets for training.
+  -n NAME,      --name NAME,          Name of the output file of the embeddings in the `results/` directory.
+  -a ALGO,      --algo ALGO,          Which algorithm to use.
+  -d DIM,       --dim DIM,            Desired embedding dimension.
+  OPTIONAL:
+  -e EPOCHS,    --epochs EPOCHS,      Number of epochs to train. Default is 1.
+  -t TARGET,    --target TARGET,      CSV file with targets for training.
+  -f FEATURES,  --features FEATURES,  JSON file with features for training.
+    ,           --eigen EIGEN,        Number of eigenvectors to use in spectral analysis.
+  -u,           --undirected,         Flag for undirected graphs. Default is directed.
 ```
 
 The CSV file has to represent the graph by triplet connection of `subject_node, relation_edge, predicate_node`. Each row should contain one connection. 
