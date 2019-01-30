@@ -106,9 +106,9 @@ class Multigraph:
         #it is an out-going adjacency graph of relation k
         graph_k = self.sparse_graph[self.rels[k]]
         shape = (self.n_nodes,self.n_nodes)
-        sparse_adj_matrix =  csr_matrix((graph_k[2], (graph_k[0],graph_k[1])), shape=shape, dtype=np.int8)
+        sparse_adj_matrix =  csr_matrix((graph_k[2], (graph_k[0],graph_k[1])), shape=shape)
         if self.undirected:
-            transpose_adj_matrix = csr_matrix((graph_k[2], (graph_k[1],graph_k[0])), shape=shape, dtype=np.int8)
+            transpose_adj_matrix = csr_matrix((graph_k[2], (graph_k[1],graph_k[0])), shape=shape)
             return (sparse_adj_matrix + transpose_adj_matrix)
         else:
             return sparse_adj_matrix
@@ -119,9 +119,9 @@ class Multigraph:
         graph_k = self.sparse_graph[self.rels[k]]
         shape = (self.n_nodes,self.n_nodes)
         #switch the rows and columns
-        sparse_adj_matrix =  csr_matrix((graph_k[2], (graph_k[1],graph_k[0])), shape=shape, dtype=np.int8)
+        sparse_adj_matrix =  csr_matrix((graph_k[2], (graph_k[1],graph_k[0])), shape=shape)
         if self.undirected:
-            transpose_adj_matrix = csr_matrix((graph_k[2], (graph_k[0],graph_k[1])), shape=shape, dtype=np.int8)
+            transpose_adj_matrix = csr_matrix((graph_k[2], (graph_k[0],graph_k[1])), shape=shape)
             return (sparse_adj_matrix + transpose_adj_matrix)
         else:
             return sparse_adj_matrix

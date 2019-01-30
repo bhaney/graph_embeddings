@@ -13,9 +13,8 @@ from future.utils import iteritems
 
 from gembed.multigraph import Multigraph
 from gembed.layers import SpectralConv
-from gembed.utils import laplacian, get_train_test_labels
+from gembed.utils import laplacian, get_train_test_labels, categorical_metrics
 from rgcn.utils import sample_mask, get_splits, evaluate_preds
-from sklearn.metrics import classification_report
 
 from keras.layers import Input, Dropout
 from keras.models import Model
@@ -40,7 +39,7 @@ def spectral_model(n_nodes, n_features, n_eigen, encoding_dim, output_dim, learn
     # Compile model
     training_model = Model(inputs=[E_in, E_T_in, X_in], outputs=Y)
     embedding_model = Model(inputs=[E_in, E_T_in, X_in], outputs=the_code)
-    training_model.compile(loss='categorical_crossentropy', sample_weight_mode='temporal', optimizer=Adam(lr=LR), metrics=['accuracy'])
+    training_model.compile(loss='categorical_crossentropy', sample_weight_mode='temporal', optimizer=Adam(lr=LR), weighted_metrics=['accuracy'])
     training_model.summary()
     return (embedding_model, training_model)
 
@@ -72,11 +71,13 @@ def spectral_embeddings(graph, embedding_dim, features_json, target_csv, epochs=
     ###
     y, train_idx, test_idx = get_train_test_labels(graph, target_csv, train_frac=0.80)
     y_train, y_val, y_test, idx_train, idx_val, idx_test = get_splits(y, train_idx, test_idx, validation=False)
-    y_train = y_train.reshape((1, y_train.shape[0], y_train.shape[1]))
     train_mask = sample_mask(idx_train, num_nodes) #sets all the nodes not used for training to False
     test_mask = sample_mask(idx_test, num_nodes) #sets all the nodes not used for testing to False
     # have to reshape to be 3D, all nodes are processed at same time
+    y =y.toarray()
+    y = y.reshape((1, y.shape[0], y.shape[1]))
     y_val = y_val.reshape((1, y_val.shape[0], y_val.shape[1]))
+    y_train = y_train.reshape((1, y_train.shape[0], y_train.shape[1]))
     y_test = y_test.reshape((1, y_test.shape[0], y_test.shape[1]))
     train_mask = train_mask.reshape((1,train_mask.shape[0]))
     test_mask = test_mask.reshape((1,test_mask.shape[0]))
@@ -88,21 +89,14 @@ def spectral_embeddings(graph, embedding_dim, features_json, target_csv, epochs=
     ###
     #train model
     ###
-    training_model.fit([EV,EV_T,X], y=y_train, epochs=epochs, sample_weight=train_mask, shuffle=False, verbose=1)
+    training_model.fit([EV,EV_T,X], y=y, epochs=epochs, sample_weight=train_mask, shuffle=False, verbose=1)
     ###
     # print the test results
     ###
-    score = training_model.evaluate([EV,EV_T,X], y=y_test, sample_weight=test_mask, verbose=1)
-    print('Test loss: {}'.format(score[0]))
-    print('Test accuracy: {}'.format(score[1]))
-    result = np.squeeze(training_model.predict([EV,EV_T,X]))
-    preds = np.argmax(result,axis=1)
-    # get array of just test nodes
-    test_preds = preds[(np.squeeze(test_mask) == True)]
-    test_targets = np.squeeze(y_test)
-    test_targets = test_targets[(np.squeeze(test_mask) == True)]
-    test_targets = np.argmax(test_targets,axis=1)
-    print(classification_report(test_targets, test_preds))
+    result = training_model.predict([EV,EV_T,X])
+    result = np.squeeze(result)
+    targets = np.squeeze(y)
+    categorical_metrics(result, targets, train_mask[0], test_mask[0])
     ###
     #get embeddings
     ###

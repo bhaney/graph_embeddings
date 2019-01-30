@@ -1,4 +1,4 @@
-# input: path to CSV files of connections
+# input: path to CSV files of connections (as well as features and targets)
 # output: list of tuples of form (node_name, node_embedding)
 from __future__ import print_function
 
@@ -30,10 +30,17 @@ def get_graph_embeddings(algo, graph, embedding_dim, epochs=1, **kwargs):
             raise ValueError("Graph cannot have more than 1 realation to use spectral.")
         from gembed.embedding_models.spectral import spectral_embeddings
         embeddings = spectral_embeddings(graph, embedding_dim, kwargs['features'], kwargs['target_csv'],  epochs, kwargs['n_eigen'])
+    elif algo == "gcn":
+        if 'target_csv' not in kwargs or kwargs['target_csv'] is None:
+            raise ValueError("Spectral requires a target CSV file.")
+        if graph.n_rels > 1:
+            raise ValueError("Graph cannot have more than 1 realation to use GCN.")
+        from gembed.embedding_models.gcn import gcn_embeddings
+        embeddings = gcn_embeddings(graph, embedding_dim, kwargs['target_csv'], kwargs['features'], epochs)
     return zip(graph.node_names, embeddings)
 
 if __name__ == "__main__":
-    algos = ['ae','rgcn','distmult','spectral']
+    algos = ['ae','gcn','rgcn','distmult','spectral']
     parser = argparse.ArgumentParser()
     group = parser.add_mutually_exclusive_group()
     group.add_argument("-p", "--path", help="path of directory of csv files.")

@@ -68,8 +68,7 @@ class SpectralConv(Layer):
     # Output Shape
     # 3D tensor with shape: (batch_size, n_nodes, n_filters)
     def __init__(self, filters, eigenvectors,
-	         activation=None, n_eigen=None, # how many eigenvectors to use
-		 data_format='channels_last',
+	         activation=None, data_format='channels_last',
 		 kernel_initializer='glorot_uniform',
 		 kernel_regularizer=None, kernel_constraint=None, 
                  activity_regularizer=None, **kwargs):
