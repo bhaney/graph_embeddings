@@ -105,7 +105,6 @@ class SpectralConv(Layer):
                                       name='kernel',
                                       regularizer=self.kernel_regularizer,
 				      constraint=self.kernel_constraint)
-        #self.input_spec = InputSpec(ndim=3, axes={channel_axis: input_dim})
         self.built = True
 
     def graph_convolve(self, inputs):
@@ -129,6 +128,62 @@ class SpectralConv(Layer):
         output = K.batch_dot(eigenvectors_T, features)
         output = K.map_fn(self.graph_convolve, output)
         output = K.batch_dot(eigenvectors, output)
+        if self.activation is not None:
+            output = self.activation(output)
+        return output
+
+class FirstChebConv(Layer):
+    # Input Shape
+    # 3D tensor with shape: (batch_size, n_nodes, n_features)
+    # Output Shape
+    # 3D tensor with shape: (batch_size, n_nodes, n_filters)
+    def __init__(self, filters, n_nodes,
+                 activation=None, data_format='channels_last',
+                 kernel_initializer='glorot_uniform',
+                 kernel_regularizer=None, kernel_constraint=None,
+                 activity_regularizer=None, **kwargs):
+        self.filters = filters
+        self.activation = activations.get(activation)
+        self.n_nodes = n_nodes
+        self.data_format = data_format
+        self.kernel_initializer = initializers.get(kernel_initializer)
+        self.kernel_regularizer = regularizers.get(kernel_regularizer)
+        self.kernel_constraint = constraints.get(kernel_constraint)
+        self.activity_regularizer = regularizers.get(activity_regularizer)
+        super(FirstChebConv, self).__init__(**kwargs)
+
+    def compute_output_shape(self, input_shape):
+        feature_shape = input_shape[-1]
+        output_shape = (feature_shape[0], feature_shape[1], self.filters)
+        return output_shape  # (batch_size, n_nodes, n_filters)
+
+    def build(self, input_shape):
+        feature_shape = input_shape[-1]
+        if self.data_format == 'channels_first':
+            channel_axis = 1
+        else:
+            channel_axis = -1
+        if feature_shape[channel_axis] is None:
+            raise ValueError('The channel dimension of the inputs '
+                             'should be defined. Found `None`.')
+        input_dim = feature_shape[channel_axis]
+        self.input_dim = input_dim
+        kernel_shape = (self.input_dim, self.filters)
+        self.kernel = self.add_weight(shape=kernel_shape,
+                                      initializer=self.kernel_initializer,
+                                      name='kernel',
+                                      regularizer=self.kernel_regularizer,
+                                      constraint=self.kernel_constraint)
+        self.built = True
+
+    def call(self, inputs):
+        # input 3D tensor with shape: (batch_size, n_nodes, n_features)
+        # laplacian 3D tensor with shape: (batch_size, n_nodes, n_nodes)
+        # kernel 2D tensor with shape: (n_features, n_filters)
+        laplacian = inputs[0]
+        features = inputs[1]
+        output = K.map_fn(lambda x: K.dot(x, self.kernel), features)
+        output = K.batch_dot(laplacian, output)
         if self.activation is not None:
             output = self.activation(output)
         return output

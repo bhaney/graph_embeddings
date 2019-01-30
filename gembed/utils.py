@@ -30,10 +30,8 @@ def normed_laplacian(A):
     L = (Dt_inv.dot(At)).tocsr()
     return L 
 
-def get_train_test_labels(graph, filename, train_frac=0.8):
-    training_dict = defaultdict(list)
-    train_ids = list()
-    test_ids = list()
+def get_target_labels(graph, filename):
+    target_dict = defaultdict(list)
     with open(filename, 'r') as csvfile:
         graphreader = csv.reader(csvfile)
         i = 0 #first row is the header, skip it
@@ -42,23 +40,21 @@ def get_train_test_labels(graph, filename, train_frac=0.8):
                 i += 1
                 continue
             #replace name of node with node index in the graph
-            idx = graph.nodes[row[0]]
-            training_dict[row[1]].append(idx)
-            #randomly sort sample into the training or test set
-            if random.random() < train_frac:
-                train_ids.append(idx)
-            else:
-                test_ids.append(idx)
-    num_labels = len(list(training_dict))
-    #create a sparse matrix with all the nodes that have labels
+            idx = graph.nodes[row[0]] 
+            target_dict[row[1]].append(idx)
+    num_labels = len(list(target_dict))
+    #create a sparse matrix with all the nodes
     labels = sp.lil_matrix((graph.n_nodes, num_labels))
-    i = 0
-    for (k,v) in iteritems(training_dict):
+    #if some nodes do not have labels, they will be False in has_label
+    has_label = np.full(graph.n_nodes, False)
+    label_i = 0 #this converts a label k to a number label_i 
+    for (k,v) in iteritems(target_dict):
         for s in v:
             #print('node(name) {}({}) in category {}'.format(s,graph.get_node_name(s),k))
-            labels[s, i] = 1
-        i += 1
-    return (labels, train_ids, test_ids)
+            labels[s, label_i] = 1
+            has_label[s] = True
+        label_i += 1
+    return (labels, has_label)
 
 def get_matrix_of_features(features_json, n_nodes):
     with open(features_json,'r') as f:
