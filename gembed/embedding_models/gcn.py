@@ -125,9 +125,9 @@ def gcn_embeddings(graph, embedding_dim, target_csv, features_json=None, epochs=
     train_mask = sample_mask(idx_train, num_nodes).astype(int) #sets all the nodes not used for training to False
     test_mask = sample_mask(idx_test, num_nodes).astype(int) #sets all the nodes not used for testing to False
     #for karate club, only give one example from each class
-    #train_mask = np.zeros(num_nodes)
-    #train_mask[np.array([13,0,15,23])] = 1
-    #test_mask = np.ones(num_nodes)
+    train_mask = np.zeros(num_nodes)
+    train_mask[np.array([13,0,15,23])] = 1
+    test_mask = np.ones(num_nodes)
     # have to reshape to be 3D, all nodes are processed at same time
     y =y.toarray()
     y = y.reshape((1, y.shape[0], y.shape[1]))
