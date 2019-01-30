@@ -87,11 +87,13 @@ def gcn_model(n_nodes, n_features, encoding_dim, output_dim, learn_rate=0.01, l2
     L_in = Input(shape=(n_nodes,n_nodes), sparse=False, name="laplacian")
     X_in = Input(shape=(n_nodes,n_features), sparse=False, name="features")
     # Define model architecture
-    ConvLayer1 = FirstChebConv(encoding_dim, n_nodes, activation='tanh', kernel_regularizer=regularizers.l2(L2))
+    ConvLayer0 = FirstChebConv(2*encoding_dim, n_nodes, activation='tanh', kernel_regularizer=regularizers.l2(L2))
+    ConvLayer1 = FirstChebConv(2*encoding_dim, n_nodes, activation='tanh', kernel_regularizer=regularizers.l2(L2))
     ConvLayer2 = FirstChebConv(encoding_dim, n_nodes, activation='tanh', kernel_regularizer=regularizers.l2(L2))
     ConvLayer3 = FirstChebConv(output_dim, n_nodes, activation='softmax')
     #outputs
-    R = ConvLayer1([L_in, X_in])
+    R = ConvLayer0([L_in, X_in])
+    R = ConvLayer1([L_in, R])
     the_code = ConvLayer2([L_in, R])
     Y = ConvLayer3([L_in, the_code])
     # Compile model
@@ -118,10 +120,14 @@ def gcn_embeddings(graph, embedding_dim, target_csv, features_json=None, epochs=
     ###
     # get targets for model
     ###
-    y, train_idx, test_idx = get_train_test_labels(graph, target_csv, train_frac=0.80)
+    y, train_idx, test_idx = get_train_test_labels(graph, target_csv, train_frac=1.00)
     y_train, y_val, y_test, idx_train, idx_val, idx_test = get_splits(y, train_idx, test_idx, validation=False)
     train_mask = sample_mask(idx_train, num_nodes).astype(int) #sets all the nodes not used for training to False
     test_mask = sample_mask(idx_test, num_nodes).astype(int) #sets all the nodes not used for testing to False
+    #for karate club, only give one example from each class
+    #train_mask = np.zeros(num_nodes)
+    #train_mask[np.array([13,0,15,23])] = 1
+    #test_mask = np.ones(num_nodes)
     # have to reshape to be 3D, all nodes are processed at same time
     y =y.toarray()
     y = y.reshape((1, y.shape[0], y.shape[1]))

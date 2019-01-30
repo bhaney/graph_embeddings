@@ -55,6 +55,7 @@ def get_train_test_labels(graph, filename, train_frac=0.8):
     i = 0
     for (k,v) in iteritems(training_dict):
         for s in v:
+            #print('node(name) {}({}) in category {}'.format(s,graph.get_node_name(s),k))
             labels[s, i] = 1
         i += 1
     return (labels, train_ids, test_ids)
@@ -83,10 +84,13 @@ def categorical_metrics(predictions, targets, train_mask, test_mask):
     print('Train balanced accuracy: {}'.format(balanced_accuracy_score(targs, preds,sample_weight=train_mask)))
     print('Train loss: {}'.format(log_loss(targets, predictions,sample_weight=train_mask)))
     print('####')
-    print('Test accuracy: {}'.format(accuracy_score(targs, preds, True, sample_weight=test_mask)))
-    print('Test balanced accuracy: {}'.format(balanced_accuracy_score(targs, preds,sample_weight=test_mask)))
-    print('Test loss: {}'.format(log_loss(targets, predictions,sample_weight=test_mask)))
-    print('####')
-    print(classification_report(targs, preds, sample_weight=test_mask))
+    if sum(test_mask) != 0:
+        print('Test accuracy: {}'.format(accuracy_score(targs, preds, True, sample_weight=test_mask)))
+        print('Test balanced accuracy: {}'.format(balanced_accuracy_score(targs, preds,sample_weight=test_mask)))
+        print('Test loss: {}'.format(log_loss(targets, predictions,sample_weight=test_mask)))
+        print('####')
+        print(classification_report(targs, preds, sample_weight=test_mask))
+    else:
+        print(classification_report(targs, preds, sample_weight=train_mask))
     print('####')
 
